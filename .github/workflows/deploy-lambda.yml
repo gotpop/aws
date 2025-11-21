@@ -1,0 +1,83 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+name: Deploy AWS Email Lambda
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/email-lambda/**'
+      - 'src/shared/**'
+      - '.github/workflows/deploy-lambda.yml'
+
+permissions:
+  contents: read
+  packages: read
+  deployments: write
+  statuses: write
+  id-token: write
+
+jobs:
+  deploy:
+    name: Deploy Email Lambda
+    runs-on: ubuntu-latest
+
+    environment:
+      name: AWS Lambda (production)
+      url: https://aws.amazon.com/lambda/
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Start deployment
+        uses: bobheadxi/deployments@v1
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: AWS Lambda Email Service
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+          cd apps/email-lambda && yarn install --frozen-lockfile
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Build Lambda function
+        run: |
+          cd apps/email-lambda
+          yarn build
+
+      - name: Deploy to AWS Lambda
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SES_FROM_EMAIL: ${{ secrets.SES_FROM_EMAIL }}
+          SES_REPLY_TO_EMAIL: ${{ secrets.SES_REPLY_TO_EMAIL }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+        run: |
+          cd apps/email-lambda
+          yarn deploy --stage prod
+
+      - name: Update deployment status
+        uses: bobheadxi/deployments@v1
+        if: always()
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          env: AWS Lambda Email Service
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}

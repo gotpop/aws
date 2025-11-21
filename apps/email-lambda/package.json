@@ -1,0 +1,36 @@
+{
+  "name": "email-lambda",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Contact form email service Lambda function",
+  "scripts": {
+    "build": "tsc",
+    "dev": "sls offline --httpPort 3003",
+    "deploy": "sls deploy",
+    "remove": "sls remove",
+    "lint": "npx biome lint src/",
+    "format:check": "npx biome check src/",
+    "format:fix": "npx biome check --write src/",
+    "type-check": "tsc --noEmit",
+    "test": "echo 'No tests yet'"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.682.0",
+    "@react-email/render": "^1.0.1",
+    "@react-email/components": "^0.0.25",
+    "react": "^19.2.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.6",
+    "@types/aws-lambda": "^8.10.145",
+    "@types/node": "^20.0.0",
+    "serverless": "^3.38.0",
+    "serverless-offline": "^13.8.0",
+    "serverless-plugin-typescript": "^2.1.5",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=22.20.0"
+  }
+}

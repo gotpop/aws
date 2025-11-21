@@ -1,0 +1,28 @@
+{
+  "name": "email-preview",
+  "version": "0.1.0",
+  "private": true,
+  "description": "React Email template preview and development",
+  "scripts": {
+    "dev": "email dev --port 3004",
+    "build": "email build",
+    "preview": "email preview",
+    "lint": "npx biome lint src/",
+    "format:check": "npx biome check src/",
+    "format:fix": "npx biome check --write src/",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@react-email/components": "^0.0.25",
+    "react": "^19.2.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.6",
+    "@react-email/cli": "^0.2.3",
+    "@types/react": "^19.2.2",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=22.20.0"
+  }
+}

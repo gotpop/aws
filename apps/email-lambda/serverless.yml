@@ -1,0 +1,50 @@
+service: gotpop-email-lambda
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: ${env:AWS_REGION}
+  stage: ${opt:stage, 'prod'}
+  environment:
+    AWS_REGION: ${env:AWS_REGION}
+    SES_FROM_EMAIL: ${env:SES_FROM_EMAIL, 'noreply@gotpop.io'}
+    SES_REPLY_TO_EMAIL: ${env:SES_REPLY_TO_EMAIL, 'hello@gotpop.io'}
+    ADMIN_EMAIL: ${env:ADMIN_EMAIL}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - ses:SendEmail
+            - ses:SendRawEmail
+          Resource: "*"
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
+functions:
+  sendContactEmail:
+    handler: src/handlers/contact.handler
+    events:
+      - http:
+          path: /contact
+          method: post
+          cors:
+            origin: 
+              - https://gotpop.io
+              - https://work.gotpop.io
+              - http://localhost:3000
+              - http://localhost:3001
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+            allowCredentials: true
+
+custom:
+  serverless-offline:
+    httpPort: 3003

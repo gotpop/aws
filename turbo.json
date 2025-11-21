@@ -1,0 +1,28 @@
+{
+  "pipeline": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "outputs": []
+    },
+    "format:check": {
+      "outputs": []
+    },
+    "format:fix": {
+      "cache": false
+    },
+    "type-check": {
+      "outputs": []
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".serverless/**"]
+    },
+    "deploy": {
+      "dependsOn": ["build"],
+      "cache": false
+    }
+  }
+}

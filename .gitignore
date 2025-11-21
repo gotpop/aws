@@ -1,0 +1,58 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.next/
+.vercel/
+.turbo/
+.serverless/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment files
+.env*.local
+.env
+
+# npm config with auth tokens
+.npmrc
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output
+
+# Package manager
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+package-lock.json
+
+# AWS
+.aws-sam/
+
+# Serverless Framework
+.serverless_nextjs/
+serverless-output.json

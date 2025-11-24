@@ -1,13 +1,11 @@
 service: gotpop-email-lambda
-frameworkVersion: '3'
 
 provider:
   name: aws
   runtime: nodejs22.x
-  region: ${env:AWS_REGION}
+  region: eu-west-2
   stage: ${opt:stage, 'prod'}
   environment:
-    AWS_REGION: ${env:AWS_REGION}
     SES_FROM_EMAIL: ${env:SES_FROM_EMAIL, 'noreply@gotpop.io'}
     SES_REPLY_TO_EMAIL: ${env:SES_REPLY_TO_EMAIL, 'hello@gotpop.io'}
     ADMIN_EMAIL: ${env:ADMIN_EMAIL}
@@ -21,8 +19,8 @@ provider:
           Resource: "*"
 
 plugins:
-  - serverless-plugin-typescript
   - serverless-offline
+  - serverless-dotenv-plugin
 
 functions:
   sendContactEmail:
@@ -32,11 +30,7 @@ functions:
           path: /contact
           method: post
           cors:
-            origin: 
-              - https://gotpop.io
-              - https://work.gotpop.io
-              - http://localhost:3000
-              - http://localhost:3001
+            origin: "*"
             headers:
               - Content-Type
               - X-Amz-Date

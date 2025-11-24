@@ -1,16 +1,10 @@
-import { render } from "@react-email/render"
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import { createSESClient, getEmailConfig, sendEmail } from "../../shared/email"
-import type { ContactEmailResult } from "../../shared/types"
-import { contactFormSchema } from "../../shared/types"
-import { ContactConfirmationEmail } from "../templates/ContactConfirmation"
-import { ContactNotificationEmail } from "../templates/ContactNotification"
 
 export async function handler(
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> {
   try {
-    // Parse and validate request body
     if (!event.body) {
       return {
         statusCode: 400,
@@ -21,48 +15,59 @@ export async function handler(
         body: JSON.stringify({
           success: false,
           message: "Request body is required",
-        } satisfies ContactEmailResult),
+        }),
       }
     }
 
-    const requestData = JSON.parse(event.body)
-    const validatedData = contactFormSchema.parse(requestData)
+    const data = JSON.parse(event.body)
+    // Minimal validation
+    if (!data.name || !data.email || !data.subject || !data.message) {
+      return {
+        statusCode: 400,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          success: false,
+          message: "Missing required fields",
+        }),
+      }
+    }
 
-    // Get email configuration
-    const config = getEmailConfig()
-    const sesClient = createSESClient(config.region)
+    // Config from env
+    const FROM_EMAIL = process.env.SES_FROM_EMAIL || "noreply@gotpop.io"
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "hello@gotpop.io"
+    const REGION = process.env.AWS_REGION || "us-east-1"
+
+    const sesClient = new SESClient({ region: REGION })
+
+    // Inline confirmation email HTML
+    const confirmationHtml = `<html><body><h1>Thanks for contacting GotPop</h1><p>Hi ${data.name},</p><p>Thanks for reaching out! I'll get back to you soon.</p></body></html>`
 
     // Send confirmation email to user
-    const confirmationHtml = render(
-      ContactConfirmationEmail({ name: validatedData.name })
-    )
-    
-    await sendEmail({
-      sesClient,
-      from: config.fromEmail,
-      to: validatedData.email,
-      subject: "Thanks for contacting GotPop",
-      htmlBody: confirmationHtml,
-    })
+    await sesClient.send(new SendEmailCommand({
+      Source: FROM_EMAIL,
+      Destination: { ToAddresses: [data.email] },
+      Message: {
+        Subject: { Data: "Thanks for contacting GotPop", Charset: "UTF-8" },
+        Body: { Html: { Data: confirmationHtml, Charset: "UTF-8" } },
+      },
+    }))
 
-    // Send notification email to admin with user's email as reply-to
-    const notificationHtml = render(
-      ContactNotificationEmail({
-        name: validatedData.name,
-        email: validatedData.email,
-        subject: validatedData.subject,
-        message: validatedData.message,
-      })
-    )
+    // Inline notification email HTML
+    const notificationHtml = `<html><body><h2>New Contact Form Submission</h2><p><b>Name:</b> ${data.name} (${data.email})</p><p><b>Subject:</b> ${data.subject}</p><p><b>Message:</b> ${data.message}</p></body></html>`
 
-    await sendEmail({
-      sesClient,
-      from: config.fromEmail,
-      to: config.adminEmail,
-      replyTo: validatedData.email, // Enable direct Gmail conversation
-      subject: `Contact Form: ${validatedData.subject}`,
-      htmlBody: notificationHtml,
-    })
+    // Send notification email to admin
+    await sesClient.send(new SendEmailCommand({
+      Source: FROM_EMAIL,
+      Destination: { ToAddresses: [ADMIN_EMAIL] },
+      ReplyToAddresses: [data.email],
+      Message: {
+        Subject: { Data: `Contact Form: ${data.subject}`, Charset: "UTF-8" },
+        Body: { Html: { Data: notificationHtml, Charset: "UTF-8" } },
+      },
+    }))
 
     return {
       statusCode: 200,
@@ -73,11 +78,10 @@ export async function handler(
       body: JSON.stringify({
         success: true,
         message: "Email sent successfully",
-      } satisfies ContactEmailResult),
+      }),
     }
   } catch (error) {
     console.error("Contact form error:", JSON.stringify(error, null, 2))
-
     return {
       statusCode: 500,
       headers: {
@@ -88,7 +92,7 @@ export async function handler(
         success: false,
         message: "Failed to send email",
         error: error instanceof Error ? error.message : "Unknown error",
-      } satisfies ContactEmailResult),
+      }),
     }
   }
 }

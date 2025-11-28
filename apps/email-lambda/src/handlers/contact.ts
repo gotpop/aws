@@ -55,16 +55,14 @@ export async function handler(
       },
     }))
 
-    // Inline notification email HTML
-    const notificationHtml = `<html><body>
-      <h2>New Contact Form Submission</h2>
-      <p><b>Name:</b> ${data.name} (${data.email})</p>
-      <p><b>Subject:</b> ${data.subject}</p>
-      <p><b>Message:</b></p>
-      <div style="margin:1em 0;padding:1em;background:#f9f9f9;border-radius:6px;border:1px solid #eee;">
-        ${data.message}
-      </div>
-    </body></html>`
+    // Read prebuilt notification email template and inject data
+    const fs = require("fs")
+    let notificationHtml = fs.readFileSync("/var/task/emails/contact-notification.template.html", "utf8")
+    notificationHtml = notificationHtml
+      .replace(/{{name}}/g, data.name)
+      .replace(/{{email}}/g, data.email)
+      .replace(/{{subject}}/g, data.subject)
+      .replace(/{{message}}/g, data.message)
 
     // Send notification email to admin
     await sesClient.send(new SendEmailCommand({

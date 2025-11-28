@@ -56,7 +56,15 @@ export async function handler(
     }))
 
     // Inline notification email HTML
-    const notificationHtml = `<html><body><h2>New Contact Form Submission</h2><p><b>Name:</b> ${data.name} (${data.email})</p><p><b>Subject:</b> ${data.subject}</p><p><b>Message:</b> ${data.message}</p></body></html>`
+    const notificationHtml = `<html><body>
+      <h2>New Contact Form Submission</h2>
+      <p><b>Name:</b> ${data.name} (${data.email})</p>
+      <p><b>Subject:</b> ${data.subject}</p>
+      <p><b>Message:</b></p>
+      <div style="margin:1em 0;padding:1em;background:#f9f9f9;border-radius:6px;border:1px solid #eee;">
+        ${data.message}
+      </div>
+    </body></html>`
 
     // Send notification email to admin
     await sesClient.send(new SendEmailCommand({
@@ -64,7 +72,7 @@ export async function handler(
       Destination: { ToAddresses: [ADMIN_EMAIL] },
       ReplyToAddresses: [data.email],
       Message: {
-        Subject: { Data: `Contact Form: ${data.subject}`, Charset: "UTF-8" },
+        Subject: { Data: data.subject, Charset: "UTF-8" },
         Body: { Html: { Data: notificationHtml, Charset: "UTF-8" } },
       },
     }))

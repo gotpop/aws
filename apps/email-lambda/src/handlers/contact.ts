@@ -1,6 +1,13 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 
+type TemplateData = {
+	name: string;
+	email: string;
+	subject: string;
+	message: string;
+};
+
 export async function handler(
 	event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> {
@@ -45,7 +52,6 @@ export async function handler(
 
 		const sesClient = new SESClient({ region: REGION });
 
-		// Helper to read template file contents
 		function getTemplateHtml(templateName: string): string {
 			const filePath = path.join(
 				__dirname,
@@ -56,13 +62,18 @@ export async function handler(
 			return fs.readFileSync(filePath, "utf8");
 		}
 
-		let confirmationHtml = getTemplateHtml("contact-confirmation");
+		function injectTemplateData(html: string, data: TemplateData): string {
+			return html
+				.replace(/{{name}}/g, data.name)
+				.replace(/{{email}}/g, data.email)
+				.replace(/{{subject}}/g, data.subject)
+				.replace(/{{message}}/g, data.message);
+		}
 
-		confirmationHtml = confirmationHtml
-			.replace(/{{name}}/g, data.name)
-			.replace(/{{email}}/g, data.email)
-			.replace(/{{subject}}/g, data.subject)
-			.replace(/{{message}}/g, data.message);
+		const confirmationHtml = injectTemplateData(
+			getTemplateHtml("contact-confirmation"),
+			data,
+		);
 
 		// Send confirmation email to user
 		await sesClient.send(
@@ -76,13 +87,10 @@ export async function handler(
 			}),
 		);
 
-		let notificationHtml = getTemplateHtml("contact-notification");
-
-		notificationHtml = notificationHtml
-			.replace(/{{name}}/g, data.name)
-			.replace(/{{email}}/g, data.email)
-			.replace(/{{subject}}/g, data.subject)
-			.replace(/{{message}}/g, data.message);
+		const notificationHtml = injectTemplateData(
+			getTemplateHtml("contact-notification"),
+			data,
+		);
 
 		// Send notification email to admin with content
 		await sesClient.send(

@@ -22,6 +22,7 @@ package:
   patterns:
     - 'src/**'
     - 'src/templates/**'
+    - '!src/**/*.ts'
     - '!node_modules/**'
     - '!.git/**'
     - '!.serverless/**'

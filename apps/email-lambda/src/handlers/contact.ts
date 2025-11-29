@@ -4,6 +4,9 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 export async function handler(
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> {
+  const fs = require("fs");
+const path = require("path");
+
   try {
     if (!event.body) {
       return {
@@ -38,12 +41,23 @@ export async function handler(
     // Config from env
     const FROM_EMAIL = process.env.SES_FROM_EMAIL || "noreply@gotpop.io"
     const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "hello@gotpop.io"
-    const REGION = process.env.AWS_REGION || "us-east-1"
+    const REGION = process.env.AWS_REGION || "eu-west-2"
 
     const sesClient = new SESClient({ region: REGION })
 
     // Inline confirmation email HTML
-    const confirmationHtml = `<html><body><h1>Thanks for contacting GotPop</h1><p>Hi ${data.name},</p><p>Thanks for reaching out! I'll get back to you soon.</p></body></html>`
+    // const confirmationHtml = `<html><body><h1>Thanks for contacting GotPop</h1><p>Hi ${data.name},</p><p>Thanks for reaching out! I'll get back to you soon.</p></body></html>`
+let confirmationHtml = fs.readFileSync(
+  path.join(__dirname, "..", "templates", "contact-confirmation.html"), 
+  "utf8"
+);
+
+confirmationHtml = confirmationHtml
+  .replace(/{{name}}/g, data.name)
+  .replace(/{{email}}/g, data.email)
+  .replace(/{{subject}}/g, data.subject)
+  .replace(/{{message}}/g, data.message);
+
 
     // Send confirmation email to user
     await sesClient.send(new SendEmailCommand({
@@ -55,14 +69,20 @@ export async function handler(
       },
     }))
 
-    // Read prebuilt notification email template and inject data
-    const fs = require("fs")
-    let notificationHtml = fs.readFileSync("/var/task/emails/contact-notification.template.html", "utf8")
-    notificationHtml = notificationHtml
-      .replace(/{{name}}/g, data.name)
-      .replace(/{{email}}/g, data.email)
-      .replace(/{{subject}}/g, data.subject)
-      .replace(/{{message}}/g, data.message)
+
+
+
+// Fix the path - go up one directory from handlers/ to src/, then into templates/
+let notificationHtml = fs.readFileSync(
+  path.join(__dirname, "..", "templates", "contact-notification.html"), 
+  "utf8"
+);
+
+notificationHtml = notificationHtml
+  .replace(/{{name}}/g, data.name)
+  .replace(/{{email}}/g, data.email)
+  .replace(/{{subject}}/g, data.subject)
+  .replace(/{{message}}/g, data.message);
 
     // Send notification email to admin
     await sesClient.send(new SendEmailCommand({

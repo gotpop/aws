@@ -18,6 +18,14 @@ provider:
             - ses:SendRawEmail
           Resource: "*"
 
+package:
+  patterns:
+    - 'src/**'
+    - 'src/templates/**'
+    - '!node_modules/**'
+    - '!.git/**'
+    - '!.serverless/**'
+
 plugins:
   - serverless-offline
   - serverless-dotenv-plugin

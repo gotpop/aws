@@ -56,3 +56,6 @@ package-lock.json
 # Serverless Framework
 .serverless_nextjs/
 serverless-output.json
+
+# React email preview
+apps/email-preview/.react-email

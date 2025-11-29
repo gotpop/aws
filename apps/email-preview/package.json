@@ -10,6 +10,7 @@
     "lint": "npx biome lint src/",
     "format:check": "npx biome check src/",
     "format:fix": "npx biome check --write src/",
+    "export:lambda": "npx react-email export --outDir ../email-lambda/emails",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

@@ -14,7 +14,7 @@ interface ContactConfirmationEmailProps {
 }
 
 export const ContactConfirmationEmail = ({
-  name = "John Doe",
+  name = "{{John Doe}}",
 }: ContactConfirmationEmailProps) => {
   return (
     <Html>

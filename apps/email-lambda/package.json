@@ -1,32 +1,28 @@
 {
-  "name": "email-lambda",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Contact form email service Lambda function",
-  "scripts": {
-    "build": "tsc",
-    "dev": "sls offline --httpPort 3003",
-    "deploy": "sls deploy",
-    "remove": "sls remove",
-    "lint": "npx biome lint src/",
-    "format:check": "npx biome check src/",
-    "format:fix": "npx biome check --write src/",
-    "type-check": "tsc --noEmit",
-    "test": "echo 'No tests yet'"
-  },
-  "dependencies": {
-    "@aws-sdk/client-ses": "^3.682.0",
-    "serverless-dotenv-plugin": "^6.0.0"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.2.6",
-    "@types/aws-lambda": "^8.10.145",
-    "@types/node": "^20.0.0",
-    "serverless": "^3.38.0",
-    "serverless-offline": "^13.8.0",
-    "typescript": "^5.7.3"
-  },
-  "engines": {
-    "node": ">=22.20.0"
-  }
+	"name": "email-lambda",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Contact form email service Lambda function",
+	"scripts": {
+		"build": "tsc",
+		"lint": "npx biome lint src/",
+		"format:check": "npx biome check src/",
+		"format:fix": "npx biome check --write src/",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@aws-sdk/client-ses": "^3.682.0",
+		"serverless-dotenv-plugin": "^6.0.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.2.6",
+		"@types/aws-lambda": "^8.10.145",
+		"@types/node": "^20.0.0",
+		"serverless": "^3.38.0",
+		"serverless-offline": "^13.8.0",
+		"typescript": "^5.7.3"
+	},
+	"engines": {
+		"node": ">=22.20.0"
+	}
 }

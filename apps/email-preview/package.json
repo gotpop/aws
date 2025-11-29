@@ -1,31 +1,31 @@
 {
-  "name": "email-preview",
-  "version": "0.1.0",
-  "private": true,
-  "description": "React Email template preview and development",
-  "scripts": {
-    "dev": "email dev --port 3004",
-    "build": "email build",
-    "preview": "email preview",
-    "lint": "npx biome lint src/",
-    "format:check": "npx biome check src/",
-    "format:fix": "npx biome check --write src/",
-    "export:lambda": "npx react-email export --outDir ../email-lambda/emails",
-    "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@react-email/components": "^0.0.25",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.2.6",
-    "@react-email/preview-server": "5.0.5",
-    "@types/react": "^19.2.2",
-    "react-email": "^5.0.5",
-    "typescript": "^5.7.3"
-  },
-  "engines": {
-    "node": ">=22.20.0"
-  }
+	"name": "email-preview",
+	"version": "0.1.0",
+	"private": true,
+	"description": "React Email template preview and development",
+	"scripts": {
+		"dev": "email dev --port 3004",
+		"build": "email build",
+		"preview": "email preview",
+		"lint": "npx biome lint src/",
+		"format:check": "npx biome check src/",
+		"format:fix": "npx biome check --write src/",
+		"export:templates": "npx react-email export --outDir ../email-lambda/src/templates",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@react-email/components": "^0.0.25",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.2.6",
+		"@react-email/preview-server": "5.0.5",
+		"@types/react": "^19.2.2",
+		"react-email": "^5.0.5",
+		"typescript": "^5.7.3"
+	},
+	"engines": {
+		"node": ">=22.20.0"
+	}
 }

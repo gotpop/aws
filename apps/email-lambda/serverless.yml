@@ -2,7 +2,7 @@ service: gotpop-email-lambda
 
 provider:
   name: aws
-  runtime: nodejs22.x
+  runtime: nodejs20.x
   region: eu-west-2
   stage: ${opt:stage, 'prod'}
   environment:
@@ -28,8 +28,8 @@ package:
     - '!.serverless/**'
 
 plugins:
-  - serverless-offline
   - serverless-dotenv-plugin
+  - serverless-offline
 
 functions:
   sendContactEmail:

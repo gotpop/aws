@@ -6,7 +6,7 @@ AWS Lambda monorepo for gotpop platform email services and serverless functions.
 
 - **Runtime**: Node.js 22+ with TypeScript
 - **Email**: AWS SES with React Email templates  
-- **Deployment**: Serverless Framework + GitHub Actions
+- **Deployment**: Serverless Framework 
 - **Development**: Turbo monorepo with local email preview
 
 ## Structure
@@ -35,7 +35,8 @@ The email Lambda handles contact form submissions by:
 3. **Notification email** sent to admin Gmail with `Reply-To: user@email.com`
 4. **Direct Gmail conversation** when you reply to user
 
-## Environment Variables
+## Local email dev
+- **Preview UI**: React Email preview server 
 
 ```bash
 # AWS Configuration (from existing gotpop infrastructure)
@@ -47,9 +48,17 @@ ADMIN_EMAIL=your@gmail.com
 SES_REPLY_TO_EMAIL=hello@gotpop.io
 ```
 
-## Deployment
+### React Email Preview (local)
 
-Automatic deployment via GitHub Actions using existing AWS credentials:
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_REGION`
+```bash
+cd apps/email-preview
+yarn dev           # Start React Email preview server (http://localhost:3004)
+```
+
+### Static Email Export
+
+```bash
+cd apps/email-preview
+yarn export:templates   # Export static HTML emails to /out
+```
+

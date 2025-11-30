@@ -48,6 +48,10 @@ ADMIN_EMAIL=your@gmail.com
 SES_REPLY_TO_EMAIL=hello@gotpop.io
 ```
 
+```
+serverless deploy
+```
+
 ### React Email Preview (local)
 
 ```bash

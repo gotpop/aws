@@ -22,7 +22,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.8",
 		"turbo": "^2.0.0",
-		"typescript": "~5.0.4"
+		"typescript": "~5.7.0"
 	},
 	"prettier": {
 		"semi": false,
